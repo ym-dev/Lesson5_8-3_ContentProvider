@@ -11,11 +11,17 @@ import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageView;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static final int PERMISSIONS_REQUEST_CODE = 100;
+    Button playButton;                //ボタン
+    Uri[] uriArr;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -36,6 +42,9 @@ public class MainActivity extends AppCompatActivity {
         } else {
             getContentsInfo();
         }
+        playButton = (Button) findViewById(R.id.playButton);
+        playButton.setTag(0);
+        playButton.setOnClickListener(this);
     }
 
     @Override
@@ -44,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
             case PERMISSIONS_REQUEST_CODE:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     getContentsInfo();
+
                 }
                 break;
             default:
@@ -51,7 +61,12 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+
+
     private void getContentsInfo() {
+
+        int i = 0;
+
         ContentResolver resolver = getContentResolver();
         Cursor cursor = resolver.query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI, // データの種類
@@ -65,16 +80,35 @@ public class MainActivity extends AppCompatActivity {
             do {
                 // indexからIDを取得し、そのIDから画像のURIを取得する
                 int fieldIndex =cursor.getColumnIndex(MediaStore.Images.Media._ID);
+
                 Long id = cursor.getLong(fieldIndex);
                 Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
 
-                ImageView imageVIew = (ImageView) findViewById(R.id.imageView);
-                imageVIew.setImageURI(imageUri);
+                int numCursorCount = cursor.getCount();
+                uriArr = new Uri[numCursorCount];
+                uriArr[i] = imageUri;
 
-                Log.d("ANDROID", "URI: " + imageUri.toString());
+                ImageView imageVIew = (ImageView) findViewById(R.id.imageView);
+//                imageVIew.setImageURI(imageUri);
+                Log.d("ANDROID", "URI: " + imageUri.toString()+ "i = "+ i);
+                Log.d("ANDROID", "uriArr[" + i + "] = " + uriArr[i]);
+
+                i++;
             } while (cursor.moveToNext());
         }
         cursor.close();
 
+
+
     }
+
+
+    @Override
+    public void onClick(View v){
+            int i = 0;
+            Log.d("ANDROID", "uriArr[" + i + "] = " + uriArr[i]);
+        }
+
+
+
 }
