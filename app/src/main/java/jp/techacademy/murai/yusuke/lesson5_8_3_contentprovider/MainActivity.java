@@ -15,11 +15,13 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener{
 
     private static final int PERMISSIONS_REQUEST_CODE = 100;
-    Button playButton;                //ボタン
-    Uri[] uriArr;
+    Button playButton;              //ボタン
+    ArrayList<Uri> arrayList ;      //Uri型のArrayListを作りUriを格納していく
 
 
 
@@ -27,6 +29,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        arrayList = new ArrayList<Uri>();
 
         // Android 6.0以降の場合
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -65,7 +69,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void getContentsInfo() {
 
-        int i = 0;
 
         ContentResolver resolver = getContentResolver();
         Cursor cursor = resolver.query(
@@ -84,16 +87,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Long id = cursor.getLong(fieldIndex);
                 Uri imageUri = ContentUris.withAppendedId(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, id);
 
-                int numCursorCount = cursor.getCount();
-                uriArr = new Uri[numCursorCount];
-                uriArr[i] = imageUri;
+                Log.d("ANDROID", "URI: " + imageUri.toString());
 
-                ImageView imageVIew = (ImageView) findViewById(R.id.imageView);
+                arrayList.add(imageUri);
+
+//                ImageView imageVIew = (ImageView) findViewById(R.id.imageView);
 //                imageVIew.setImageURI(imageUri);
-                Log.d("ANDROID", "URI: " + imageUri.toString()+ "i = "+ i);
-                Log.d("ANDROID", "uriArr[" + i + "] = " + uriArr[i]);
 
-                i++;
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -104,10 +104,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     @Override
-    public void onClick(View v){
-            int i = 0;
-            Log.d("ANDROID", "uriArr[" + i + "] = " + uriArr[i]);
+    public void onClick(View v) {
+        int numMaxArr = arrayList.size();
+        Log.d("ANDROID", "onClick内 arrayList.size= " + numMaxArr);
+        for (int l = 0; l < numMaxArr; l++) {
+            Log.d("ANDROID", " arrayList.get(l) = " + arrayList.get(l));
         }
+    }
 
 
 
